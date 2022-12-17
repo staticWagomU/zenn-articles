@@ -19,15 +19,18 @@ publication_name: "vim_jp"
 ## 動機
 アドベントカレンダーに参加をしたものの何を書こうか悩んでいたときvim-jpのSlackにこのような発言がありました。
 ![](/images/vim_deno_zenn/img1.png)
-これを見たとき、もしかするとこれからはZennへ記事を投稿するためにNode.jsを入れなくてもよいのではとおもいました。
 
-おおよそZennへ記事を投稿するにあたり必要なものは、
+denoの1.28がリリースされたことにより`--unstable`フラグを使わずにnpmパッケージが扱えるようになりました。それによりZennへ記事を投稿するためにNode.jsを入れなくてもよいのではないかと考えこの記事を書こうと思いました。
+
+Zennの記事を執筆するにあたり、
  - zenn-cli
  - textlint
 
-の上記2つです。
+これらが動作すれば快適に記事を執筆できるため、この記事では
+ - denoからtextlintを動作させる
+ - lspとtextlintの連携
 
-そこでtextlintもdenoから動かすことができればNode.jsをインストールすることなく記事の執筆ができるのではないだろうかと考え、この記事を書くに至りました。
+の2つを目標として進めていきます。
 
 私の使用している環境は以下のとおりです。
 ```shell
@@ -45,31 +48,40 @@ deno 1.28.3 (release, aarch64-apple-darwin)
 v8 10.9.194.5
 typescript 4.8.3
 ```
+## 下準備
+### denoのインストール
+npmが安定版として対応したバージョンは2.18です。それ以降のバージョンが導入できる方法であればなんでもよいため、公式サイトからお好きな方法で導入してください。
 
-## denoのインストール
-npmへ安定版として対応したバージョンは2.18であるため、それ以降のバージョンが導入できる方法であれば、Homebrewとcurlのどちらでも問題ありません。私はcurl経由で入れています。
-
-## zenn-cliのインストールと初期化
+### zenn-cliのインストールと初期化
 次にZennの記事を管理するディレクトリで下記コマンドを実行し、セットアップを行います。
 
 ```shell
 $ deno run -A npm:zenn-cli@latest init
 ```
 
-## 必要なパッケージのインストール
+### 必要なパッケージのインストール
 そして、textlintのインストールを行います
 textlintは単体では動作せず、校正ルールというものが必要になります。これらは別パッケージとして提供されているためお好きなものを導入してください。私は今回初めてtextlintを使うため、[ゴリラさん](https://zenn.dev/skanehira/articles/2020-11-16-vim-writing-articles)の記事を参考に下記3つのパッケージを導入しようと思います。
  - textlint-rule-preset-jtf-style 
  - textlint-rule-preset-ja-technical-writing
  - textlint-rule-prh
 
-これらがどのような校正ルールであるのか気になる方は、リンク先をご確認ください。
 ```shell
+# インストールコマンド
 $ deno cache --node-modules-dir npm:textlint npm:textlint-rule-prh@latest npm:textlint-rule-preset-jtf-style@latest npm:textlint-rule-preset-ja-technical-writing@latest
 ```
-[--node-modules-dir](https://deno.land/manual@v1.28.0/node/npm_specifiers#--node-modules-dir-flag)フラグを使うことでコマンドを実行したディレクトリへnpmと同じ形式のnodemodulesフォルダが作成されます。
+[--node-modules-dir](https://deno.land/manual@v1.28.0/node/npm_specifiers#--node-modules-dir-flag)フラグを使うことでコマンドを実行したディレクトリへnpm installをしたときと同じ形式でnodemodulesフォルダが作成されます。
 
 ## 設定
+
+### プラグインの導入
+
+プラグインは下記3つをお好みのプラグインマネージャーからインストールしてください。
+| プラグイン | 説明 |
+| ---------- |--------|
+|[prabirshrestha/vim-lsp](https://github.com/prabirshrestha/vim-lsp)|lspの本体 |
+|[mattn/vim-lsp-settings](https://github.com/mattn/vim-lsp-settings)| lspの設定を楽にしてくれる|
+|[tyru/open-browser.vim](https://github.com/tyru/open-browser.vim)| vimからブラウザを起動できる|
 
 ### lspの導入
 
@@ -86,15 +98,19 @@ $ deno cache --node-modules-dir npm:textlint npm:textlint-rule-prh@latest npm:te
 ## vimrc全体
 
 ```vim
-" plugins {{{
+" plugins ================================
 call plug#begin()
-Plug 'prabirshrestha/vim-lsp'
-Plug 'mattn/vim-lsp-settings'
-Plug 'tyru/open-browser.vim'
-call plug#end()
-" }}}
 
-" lsp settings {{{
+    " lsp本体
+    Plug 'prabirshrestha/vim-lsp'
+    " lspの設定を簡単にしてくれる
+    Plug 'mattn/vim-lsp-settings'
+    " vimからブラウザを起動できる
+    Plug 'tyru/open-browser.vim'
+
+call plug#end()
+
+" lsp settings ================================
 let g:lsp_settings = {
 			\ 'efm-langserver': {
 			\   'disabled': 0,
@@ -123,42 +139,41 @@ augroup lsp_install
 	au!
 	au User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
 augroup END
-" }}}
 
-" user command {{{
+" user command ================================
+
 function! s:zenn_create_article(article_name) abort
-  let fname = a:article_name
-  " slugは12文字以上、50文字以下
-  " 先頭に日付(yyyymmdd)を加えるため、実質4文字以上、42文字以下
-  if strlen(a:article_name) > 42
-     let fname = a:article_name[0:42]
-  endif
-  if strlen(a:article_name) < 4
-     let fname = a:article_name .. "___"
-  endif
-  echo "1:tech 2:idea"
-  let a = getchar()
-  let type = "tech"
-  if a == 50
-     let type = "idea"
-  endif
-  let date = strftime("%Y%m%d")
-  let slug = date .. fname
-  echo "deno run -A npm:zenn-cli@latest new:article --slug " .. slug .. " --type " .. type
-  call system("deno run -A npm:zenn-cli@latest new:article --slug " .. slug .. " --type " .. type )
-  execute "edit articles/" .. slug .. ".md"
- endfunction
- 
- function! s:zenn_preview() abort
-  execute "bo term deno run -A npm:zenn-cli@latest preview"
-  execute "resize -100"
-  execute "normal! \<c-w>\<c-w>"
-  execute "OpenBrowser http://localhost:8000"
- endfunction
+	let aname = a:article_name
+	" slugは12文字以上、50文字以下
+	" 先頭に日付(yyyymmdd)を加えるため、実質4文字以上、42文字以下
+	if strlen(a:article_name) > 42
+		let aname = a:article_name[0:42]
+	endif
+	if strlen(a:article_name) < 4
+		let aname = a:article_name .. "___"
+	endif
+	echo "1:tech 2:idea"
+	let a = getchar()
+	let type = "tech"
+	if a == 50
+		let type = "idea"
+	endif
+	let date = strftime("%Y%m%d")
+	let slug = date .. aname
+	call system("deno run -A npm:zenn-cli@latest new:article --slug " .. slug .. " --type " .. type )
+	execute "edit articles/" .. slug .. ".md"
+endfunction
 
- command! -nargs=1 ZennCreate call s:zenn_create_article(<f-args>)
- command! ZennPreview call s:zenn_preview()
-" }}}
+function! s:zenn_preview() abort
+	execute "bo term deno run -A npm:zenn-cli@latest preview"
+	execute "resize -100"
+	execute "normal! \<c-w>\<c-w>"
+	execute "sleep"
+	execute "OpenBrowser localhost:8000"
+endfunction
+
+command! -nargs=1 ZennCreate call <sid>zenn_create_article(<f-args>)
+command! ZennPreview call <sid>zenn_preview()
 ```
 
 ## 参考

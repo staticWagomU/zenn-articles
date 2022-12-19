@@ -176,6 +176,43 @@ command! -nargs=1 ZennCreate call <sid>zenn_create_article(<f-args>)
 command! ZennPreview call <sid>zenn_preview()
 ```
 
+```.textlintrc
+{
+  "filters": {},
+  "rules": {
+    "preset-ja-technical-writing": {
+      "ja-no-weak-phrase": false,
+      "ja-no-mixed-period": false,
+      "no-exclamation-question-mark": false
+    },
+    "preset-jtf-style": true,
+    "prh": {
+      "rulePaths": [
+        "node_modules/prh/prh-rules/media/WEB+DB_PRESS.yml",
+        "node_modules/prh/prh-rules/media/techbooster.yml"
+      ]
+    }
+  }
+}
+
+```
+
+```config.yaml
+version: 2
+tools:
+  markdown-textlint: &markdown-textlint
+    lint-command: 'deno run -A --node-modules-dir npm:textlint@latest --format unix --stdin ${INPUT}'
+    lint-ignore-exit-code: true
+    lint-stdin: true
+    lint-formats:
+      - '%f:%l:%c: %m [%trror/%r]'
+    root-markers:
+      - .textlintrc
+languages:
+  markdown:
+    - <<: *markdown-textlint
+```
+
 ## 参考
 https://zenn.dev/skanehira/articles/2020-11-16-vim-writing-articles
 

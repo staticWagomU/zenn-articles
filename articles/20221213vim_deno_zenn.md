@@ -84,16 +84,100 @@ $ deno cache --node-modules-dir npm:textlint npm:textlint-rule-prh@latest npm:te
 |[tyru/open-browser.vim](https://github.com/tyru/open-browser.vim)| vimからブラウザを起動できる|
 
 ### lspの導入
+textlintのエラーを動的に反映させるために、efm-langserverというlspを使用します。
+導入するには、vimにて`:LspInstallServer efm-langserver`と入力してインストールしてください。
+また、もう少し詳細な説明が気になる人はゴリラさんの記事を参照してください。
+次に`efm-langserver`の設定ファイルを`~/.config/efm-langserver/`へ`config.yaml`という名前で作成して下記の内容を貼りつけてください。
+
+```config.yaml
+version: 2
+tools:
+  markdown-textlint: &markdown-textlint
+    lint-command: 'deno run -A --node-modules-dir npm:textlint@latest --format unix --stdin ${INPUT}'
+    lint-ignore-exit-code: true
+    lint-stdin: true
+    lint-formats:
+      - '%f:%l:%c: %m [%trror/%r]'
+    root-markers:
+      - .textlintrc
+languages:
+  markdown:
+    - <<: *markdown-textlint
+```
 
 ### textlintの設定
-
+textlintの設定ファイルは作成したフォルダ直下に`.textlintrc`という名前で作成して下記の内容を貼りつけてください。
+```.textlintrc
+{
+  "filters": {},
+  "rules": {
+    "preset-ja-technical-writing": {
+      "ja-no-weak-phrase": false,
+      "ja-no-mixed-period": false,
+      "no-exclamation-question-mark": false
+    },
+    "preset-jtf-style": true,
+    "prh": {
+      "rulePaths": [
+        "node_modules/prh/prh-rules/media/WEB+DB_PRESS.yml",
+        "node_modules/prh/prh-rules/media/techbooster.yml"
+      ]
+    }
+  }
+}
+```
 ## コマンドの作成
-:::message alert
+::: message alert
 現在、windows環境下においてdenoからは`preview`コマンドを実行できません。
-しかし、windows(wsl)環境において動作することは確認しています。
 :::
 
-## まとめ
+ターミナルに戻ることなくvim内で記事の執筆を完結させるために、
+ - 記事の作成
+ - プレビュー+ブラウザの起動
+
+を行うためのコマンドを作成します。
+
+### 記事の作成
+```vim
+function! s:zenn_create_article(article_name) abort
+	let aname = a:article_name
+	" slugは12文字以上、50文字以下
+	" 先頭に日付(yyyymmdd)を加えるため、実質4文字以上、42文字以下
+	if strlen(a:article_name) > 42
+		let aname = a:article_name[0:42]
+	endif
+	if strlen(a:article_name) < 4
+		let aname = a:article_name .. "___"
+	endif
+	echo "1:tech 2:idea"
+	let a = getchar()
+	let type = "tech"
+	if a == 50
+		let type = "idea"
+	endif
+	let date = strftime("%Y%m%d")
+	let slug = date .. aname
+	call system("deno run -A npm:zenn-cli@latest new:article --slug " .. slug .. " --type " .. type )
+	execute "edit articles/" .. slug .. ".md"
+endfunction
+
+command! -nargs=1 ZennCreate call <sid>zenn_create_article(<f-args>)
+```
+zenn-cliの`new:article`コマンドでは幾つかのフラグが存在しますが、今回作成したコマンドではslugとtypeを指定できるようにしています。
+
+### プレビュー+ブラウザの起動
+```vim
+function! s:zenn_preview() abort
+	execute "bo term deno run -A npm:zenn-cli@latest preview"
+	execute "resize -100"
+	execute "normal! \<c-w>\<c-w>"
+	execute "sleep"
+	execute "OpenBrowser localhost:8000"
+endfunction
+
+command! ZennPreview call <sid>zenn_preview()
+```
+zenn-cliからプレビューコマンドをたたくためにはターミナルを開く必要があります。しかし、ターミナルのせいで画面が狭くなってしまうことをさけたかったので、垂直分割でターミナルを開き`resize -100`で目一杯ウィンドウを小さくしたあとに元いたウィンドウへ戻るようにしています。
 
 ## vimrc全体
 
@@ -176,44 +260,9 @@ command! -nargs=1 ZennCreate call <sid>zenn_create_article(<f-args>)
 command! ZennPreview call <sid>zenn_preview()
 ```
 
-```.textlintrc
-{
-  "filters": {},
-  "rules": {
-    "preset-ja-technical-writing": {
-      "ja-no-weak-phrase": false,
-      "ja-no-mixed-period": false,
-      "no-exclamation-question-mark": false
-    },
-    "preset-jtf-style": true,
-    "prh": {
-      "rulePaths": [
-        "node_modules/prh/prh-rules/media/WEB+DB_PRESS.yml",
-        "node_modules/prh/prh-rules/media/techbooster.yml"
-      ]
-    }
-  }
-}
+## さいごに
+以前に記事を書いたときにはtextlintの存在を知らなかったので、内容の見直しを行わないといけないなと思いました。
 
-```
-
-```config.yaml
-version: 2
-tools:
-  markdown-textlint: &markdown-textlint
-    lint-command: 'deno run -A --node-modules-dir npm:textlint@latest --format unix --stdin ${INPUT}'
-    lint-ignore-exit-code: true
-    lint-stdin: true
-    lint-formats:
-      - '%f:%l:%c: %m [%trror/%r]'
-    root-markers:
-      - .textlintrc
-languages:
-  markdown:
-    - <<: *markdown-textlint
-```
 
 ## 参考
 https://zenn.dev/skanehira/articles/2020-11-16-vim-writing-articles
-
-

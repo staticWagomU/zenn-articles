@@ -63,7 +63,7 @@ $ deno run -A npm:zenn-cli@latest init
 ```
 
 ### 必要なパッケージのインストール
-そして、textlintのインストールを行います
+textlintのインストールを行います
 textlintは単体では動作せず、校正ルールというものが必要になります。これらは別パッケージとして提供されているためお好きなものを導入してください。私は今回初めてtextlintを使うため、[ゴリラさん](https://zenn.dev/skanehira/articles/2020-11-16-vim-writing-articles)の記事を参考に下記3つのパッケージを導入しようと思います。
  - textlint-rule-preset-jtf-style 
  - textlint-rule-preset-ja-technical-writing
@@ -71,7 +71,7 @@ textlintは単体では動作せず、校正ルールというものが必要に
 
 ```shell
 # インストールコマンド
-$ deno cache --node-modules-dir npm:textlint npm:textlint-rule-prh@latest npm:textlint-rule-preset-jtf-style@latest npm:textlint-rule-preset-ja-technical-writing@latest
+$ deno cache --node-modules-dir npm:textlint@latest npm:textlint-rule-prh@latest npm:textlint-rule-preset-jtf-style@latest npm:textlint-rule-preset-ja-technical-writing@latest
 ```
 [--node-modules-dir](https://deno.land/manual@v1.28.0/node/npm_specifiers#--node-modules-dir-flag)フラグを使うことでコマンドを実行したディレクトリへnpm installをしたときと同じ形式でnodemodulesフォルダが作成されます。
 
@@ -79,7 +79,7 @@ $ deno cache --node-modules-dir npm:textlint npm:textlint-rule-prh@latest npm:te
 
 ### プラグインの導入
 
-プラグインは下記3つをお好みのプラグインマネージャーからインストールしてください。
+vimのプラグインは下記3つをお好みのプラグインマネージャーからインストールしてください。
 | プラグイン | 説明 |
 | ---------- |--------|
 |[prabirshrestha/vim-lsp](https://github.com/prabirshrestha/vim-lsp)|lspの本体 |
@@ -90,6 +90,43 @@ $ deno cache --node-modules-dir npm:textlint npm:textlint-rule-prh@latest npm:te
 textlintのエラーを動的に反映させるために、efm-langserverというlspを使用します。
 導入するには、vimにて`:LspInstallServer efm-langserver`と入力してインストールしてください。
 また、もう少し詳細な説明が気になる人はゴリラさんの記事を参照してください。
+
+インストール後.vimrcに下記をコードを貼りつけてください。
+```vim
+" markdownでefm-langserverを有効にします
+let g:lsp_settings = {
+			\ 'efm-langserver': {
+			\   'disabled': 0,
+			\   'allowlist': ['markdown'],
+			\  }
+			\ }
+
+" ホバーした時にエラー内容が表示されるよ
+let g:lsp_diagnostics_float_cursor = 1
+let g:lsp_diagnostics_enabled = 1
+function! s:on_lsp_buffer_enabled() abort
+	setlocal completeopt=menu
+	setlocal omnifunc=lsp#complete
+	if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
+	nmap <buffer> gd <plug>(lsp-definition)
+	nmap <buffer> gs <plug>(lsp-document-symbol-search)
+	nmap <buffer> gS <plug>(lsp-workspace-symbol-search)
+	nmap <buffer> gr <plug>(lsp-references)
+	nmap <buffer> gi <plug>(lsp-implementation)
+	nmap <buffer> gt <plug>(lsp-type-definition)
+	nmap <buffer> <leader>rn <plug>(lsp-rename)
+	nmap <buffer> [g <plug>(lsp-previous-diagnostic)
+	nmap <buffer> ]g <plug>(lsp-next-diagnostic)
+	nmap <buffer> K <plug>(lsp-hover)
+endfunction
+
+augroup lsp_install
+	au!
+        " bufferでlspが有効だったら、関数を呼びだしてキーマッッピングを提供するよ
+	au User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+augroup END
+```
+
 次に`efm-langserver`の設定ファイルを`~/.config/efm-langserver/`へ`config.yaml`という名前で作成して下記の内容を貼りつけてください。
 
 ```config.yaml
@@ -264,8 +301,10 @@ command! ZennPreview call <sid>zenn_preview()
 ```
 
 ## さいごに
-以前に記事を書いたときにはtextlintの存在を知らなかったので、内容の見直しを行わないといけないなと思いました。
-
+もしzenn-cliのプレビューを起動したときに、アップグレードしてねと言われたときは`deno cache --reload npm:zenn-cli@latest`を実行してください。
 
 ## 参考
 https://zenn.dev/skanehira/articles/2020-11-16-vim-writing-articles
+https://deno.land/manual@v1.29.1/getting_started/installation
+https://deno.land/manual@v1.28.0/node/npm_specifiers#--node-modules-dir-flag
+https://deno.land/manual@v1.28.2/basics/modules/reloading_modules

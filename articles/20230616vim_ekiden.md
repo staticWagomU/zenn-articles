@@ -4,7 +4,8 @@ emoji: "💬"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["neovim", "lua"]
 published: true
-published_at: 2023-06-16 09:00
+published_at: 2023-06-16 00:00
+publication_name: "vim_jp"
 ---
 
 :::message

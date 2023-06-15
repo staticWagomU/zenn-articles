@@ -14,7 +14,7 @@ publication_name: "vim_jp"
 前回は kawarimidoll さんの [Vim scriptで1回しか使えないコマンド・関数を定義する](https://zenn.dev/kawarimidoll/articles/22856ed2627056) です。 次回は 2023/06/19(月) に公開される予定です。
 :::
 
-## 動機
+## はじめに
 
 2023年6月現在、私はファイラーに[oil.nvim](https://github.com/stevearc/oil.nvim)を、バッファ内のあいまい検索に[fuzzy-motion.vim](https://github.com/yuki-yano/fuzzy-motion.vim)を使っています。
 そこで、ファイラーを開いた直後にあいまい検索ができたら便利じゃないのか？という疑問を抱き、このようなキーマップを定義しました。
@@ -51,6 +51,6 @@ end,
 ![](/images/20230616_vim_ekiden/media2.gif)
 思ったとおりに動作しました。
 
-## 結論
+## おわりに
 
 `vim.schedule()`で直列実行がうまくいかない場合は`vim.defer_fn()`を使ってみてね。

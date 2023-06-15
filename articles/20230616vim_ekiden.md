@@ -1,6 +1,6 @@
 ---
 title: "vim.defer_fn でコマンドを直列実行する"
-emoji: "💬"
+emoji: "✋"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["neovim", "lua"]
 published: true

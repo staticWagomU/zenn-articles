@@ -31,7 +31,7 @@ end,
 ```
 ![](/images/20230616_vim_ekiden/media1.gif)
 しかし、結果はファイラーが起動する前にあいまい検索が起動してしまい使いものになりませんでした。
-vim-jpでそのことを呟くと、`vim.defer_fn()`で実現できますよと[ryopippiさん](https://github.com/ryoppippi)に教えていただきました。ありがとうございます！
+vim-jpでそのことを呟くと、`vim.defer_fn()`で実現できますよと[ryoppippiさん](https://github.com/ryoppippi)に教えていただきました。ありがとうございます！
 
 ドキュメントを確認したところ、第2引数へ時間を設定できるため起動タイミングをずらすことができるということでした。
 そのため、`vim.defer_fn()`を使って書き換えたところ、

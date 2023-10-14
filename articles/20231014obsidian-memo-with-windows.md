@@ -2,7 +2,7 @@
 title: "Windowsでもデイリーノートのハードルを下げる"
 emoji: "💭"
 type: "tech" # tech: 技術記事 / idea: アイデア
-topics: ["obsidian"]
+topics: ["obsidian", "windows"]
 published: true
 ---
 

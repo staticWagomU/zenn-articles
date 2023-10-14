@@ -12,7 +12,7 @@ published: true
 最後にwindowsでも同じことが実現できないかと悩んでいましたが、自分が満足できるそれっぽいものができたので共有したいと思います。
 
 ## 完成品
-![](/images/20231014obsidian-memo-with-windows/Animation.gif)
+![](/images/20231014obsidian-memo-with-windows/animation.gif)
 
 ## 必要なもの
 - Obsidian

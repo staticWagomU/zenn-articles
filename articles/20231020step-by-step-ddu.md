@@ -1,9 +1,10 @@
 ---
 title: "一歩ずつ始めるddu.vim"
-emoji: "📑"
+emoji: "✋"
 type: "tech" # tech: 技術記事 / idea: アイデア
-topics: ["neovim"]
+topics: ["neovim", "lua"]
 published: true
+publication_name: "vim_jp"
 ---
 
 ## はじめに
@@ -640,3 +641,4 @@ return {
 皆さんのこれからのddu.vim生活を応援しています！！！
 
 `:q!`
+

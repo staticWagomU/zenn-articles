@@ -6,10 +6,10 @@ topics: ["neovim", "lua"]
 published: true
 publication_name: "vim_jp"
 ---
-:::
+:::message
 この記事は[Vim駅伝](https://vim-jp.org/ekiden/)2023年11月13日(金)の記事です。
 
-前回の記事は kawarimidoll さんの「[耳元にVimを](https://gist.github.com/kawarimidoll/32f50e51cffee826ae13d5e455a3c9b6)」という記事でした。
+前回の記事は NI57721 さんの「[Vimで最近閉じたファイルを開こう](https://zenn.dev/vim_jp/articles/vim-most-recently-closed-tabs)」という記事でした。
 
 次回の記事は 11月15日(水) に投稿される予定です。
 :::

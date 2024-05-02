@@ -33,14 +33,24 @@ Neovimを始め方をざっくりと分類すると、
 - [SpaceVim](https://github.com/SpaceVim/SpaceVim)
 - [NvChad](https://github.com/NvChad/NvChad)
 - [LunarVim](https://github.com/LunarVim/LunarVim)
+    - [こちらの](https://github.com/LunarVim/LunarVim/discussions/4518)ディスカッションを見ると作者がAstroNvimを使うようになってしまい。現在メンテナンスが止っているようです。
 - [AstroNvim](https://github.com/AstroNvim/AstroNvim)
 - [LazyVim](https://github.com/LazyVim/LazyVim)
 
 ざっとこれらのものが挙げられます。
-これらを使うことでVSCodeと似たリッチなUIが用意されており、すぐに便利な状態から使い始められるというメリットがあります。しかし、やりたい操作がどのキーマッピングに振られているのか、自分の操作している機能はどのプラグインが提供しているものか分からない等の問題があります。また、それに伴って自分の望む設定を加えることが非常に困難になってしまうという大きなデメリットを抱えています。Neovimやプラグインの設定を自分で一から書くことが簡単でないことは事実です。しかし、試行錯誤しながら自分のエディタを作りあげることこそがVimの醍醐味だと自分は感じており、初めからディストリビューションを使用するのはVimの楽しみの一つを奪うようなものだと思っています。
+これらを使うことでVSCodeと似たリッチなUIが用意されており、すぐに便利な状態から使い始められるというメリットがあります。しかし、やりたい操作がどのキーマッピングに振られているのか、自分の操作している機能はどのプラグインが提供しているものか分からない等の問題があります。また、それに伴って自分の望む設定を加えることが非常に困難になってしまうという大きなデメリットを抱えています。Neovimやプラグインの設定を自分で一から書くことが簡単でないことは事実です。しかし、試行錯誤しながら自分のエディタを作りあげることがVimの醍醐味だと自分は感じており、初めからディストリビューションを使用するのはVimの楽しみの一つを奪うようなものだと思っています。
 
 ですから、この記事では後者の「１から設定をする」を選択して進めていきます。
 これにより、自分の意志でプラグインを追加し、自分の望む設定を付け加えることができます。
+
+:::message
+この記事ではディストリビューションを使うことを全面的に否定しているわけではありません。設定を一から書くためにはかなりの時間と労力を要します。Neovimを使い始めるハードルが高いと感じる人にとって、ディストリビューションは非常に有用な選択肢となるでしょう。
+
+また、ディストリビューションの設定ファイルを読むことで、設定ファイルの構造や記述方法を参考にできるため、自分の設定ファイルを書く際のヒントを得ることができるでしょう。
+
+そのため、Neovimを早く使い始めたい場合や、設定に時間をかけたくない場合は、ディストリビューションを利用するのが良いです。どちらを選ぶにせよ、Neovimの強力な機能を活用し、快適なテキスト編集環境を構築することができるはずです。
+:::
+
 
 ### この記事のゴール
 - プラグインを導入
@@ -84,18 +94,25 @@ https://github.com/folke/lazy.nvim
 https://github.com/nvim-tree/nvim-tree.lua
 
 #### 特徴
-- VSCodeに似たtree形式のファイラープラグイン
+- VSCodeで見なれているtree形式のファイラープラグイン
 
 ### シンタックスハイライト
 https://github.com/nvim-treesitter/nvim-treesitter
 
 Neovimは標準でシンタックスハイライト機能を持っています。しかし、正規表現によって実装されているため、複雑な構文のハイライトを行うのが苦手です。nvim-treesitterはtreesitterというパーサ生成ツールを使ってシンタックスハイライト等の機能を提供します。treesitterの拡張プラグインを導入することで、シンタックスハイライト以外の機能を使うこともできます。
 
+#### 特徴
+- 画面がカラフルになる
+- シンタックスハイライト以外にも利用ができる
+
 ### LSP・自動補完
 https://github.com/neoclide/coc.nvim
 
-#### 特徴
 このプラグインを使わない場合は、LSPの機能を提供するプラグインと、自動補完機能を提供するプラグインをそれぞれ導入する必要がありますが、coc.nvimではLSPの機能と自動補完機能の両方が提供されているプラグインです。
+
+#### 特徴
+- coc.nvimの中で追加機能をインストールできる。
+- Neovimだけではなく、なぜかvimでも動く
 
 ### ファイル検索
 https://github.com/nvim-telescope/telescope.nvim
@@ -109,6 +126,7 @@ https://github.com/nvim-telescope/telescope.nvim
 
 #### 特徴
 - UIをカスタマイズできる
+- 様々な拡張プラグインがある
 
 ### ステータスライン
 [lualine.nvim](https://github.com/nvim-lualine/lualine.nvim)VSCodeの下側に色々表示されてるやつ↓のNeovim版
@@ -116,7 +134,8 @@ https://github.com/nvim-telescope/telescope.nvim
 !画像
 
 #### 特徴
-- 別プラグインがコンポーネントを提供している場合がある
+- 標準のコンポーネントや自作のコンポーネントを組み合わせることによって、見せたい情報だけを表示できる
+- 他のプラグインがコンポーネントを提供している場合がある
 
 ## プラグインを導入・設定していく
 
@@ -135,7 +154,7 @@ $ tree .
 ```
 
 ### プラグインマネージャー(lazy.nvim)
-lazy.nvimではターミナルでcurl等のコマンドを叩く必要がなく、luaから所定のディレクトリに`git clone`コマンドを実行するような作りになっています。
+lazy.nvimではターミナルでcurl等のコマンドを叩く必要がなく、luaで所定のディレクトリに`git clone`コマンドを実行するコードを記載する作りになっています。
 そのコードが、[ここ](https://github.com/folke/lazy.nvim#-installation)に書かれてあります。
 ```lua
 vim.loader.enable()
@@ -155,7 +174,15 @@ vim.opt.rtp:prepend(lazypath)
 
 このコードを`init.lua`に貼り付けてください。
 
-lua製のプラグインの多くは入れるだけではそのプラグインを使うことができず、setupを自分で記述する必要があります。
+因みに、`vim.fn.stdpath("data")`は下記のディレクトリを指しています。
+```
+DATA DIRECTORY (DEFAULT) ~
+                  *$XDG_DATA_HOME*              Nvim: stdpath("data")
+    Unix:         ~/.local/share              ~/.local/share/nvim
+    Windows:      ~/AppData/Local             ~/AppData/Local/nvim-data
+```
+
+lua製のプラグインの多くは入れるだけではそのプラグインを使うことができず、setupを自分で呼び出す必要があります。
  ```diff
  vim.loader.enable()
  local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"

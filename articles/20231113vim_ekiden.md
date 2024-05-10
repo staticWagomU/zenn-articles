@@ -71,7 +71,7 @@ Neovimを始め方をざっくりと分類すると、
 - READMEを読む
 - githubで検索する
 
-### プラグインを探す
+### プラグインを探せる
 - [yutkat/my-neovim-pluginlist](https://github.com/yutkat/my-neovim-pluginlist)をチェックする
 - [This Week in Neovim | Neovim news](https://dotfyle.com/this-week-in-neovim)をチェックする
 - vim-jpに入る
@@ -139,24 +139,18 @@ https://github.com/nvim-telescope/telescope.nvim
 
 ## プラグインを導入・設定していく
 
-### 初期のファイル構成
+### 最初のファイル構成
 ```shell
 $ tree .
 .
-├── init.lua
-└── lua
-    ├── coc.lua
-    ├── lazy.lua
-    ├── lualine.lua
-    ├── nvim-tree.lua
-    ├── nvim-treesitter.lua
-    └── telescope.lua
+└── init.lua
 ```
 
 ### プラグインマネージャー(lazy.nvim)
 lazy.nvimではターミナルでcurl等のコマンドを叩く必要がなく、luaで所定のディレクトリに`git clone`コマンドを実行するコードを記載する作りになっています。
 そのコードが、[ここ](https://github.com/folke/lazy.nvim#-installation)に書かれてあります。
 ```lua
+-- init.lua
 vim.loader.enable()
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -198,8 +192,13 @@ lua製のプラグインの多くは入れるだけではそのプラグイン�
  end
  vim.opt.rtp:prepend(lazypath)
 
-+require("lazy").setup("plugins")
++require("lazy").setup({
++  { "folke/lazy.nvim" },
++})
+
 ```
+これで再度Neovimを起動することでlazy.nvimの導入が完了します。しかし、このままではプラグインの管理ができません。
+どうすればよいのかが、`:h lazy.nvim.txt`へ書いています。
 lazyのsetup関数に対して"plugins"という引数を渡しています。これは、
 [folke/lazy.nvim　#📂 Structuring Your Plugins](https://github.com/folke/lazy.nvim#-structuring-your-plugins)に説明があります。
 > Any lua file in `~/.config/nvim/lua/plugins/*.lua` will be automatically merged in the main plugin spec

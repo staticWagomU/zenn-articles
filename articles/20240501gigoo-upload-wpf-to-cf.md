@@ -1,25 +1,23 @@
 ---
-title: "Windowsで作ったWPFのexeをCludflareR2とD1でバージョン管理する"
-emoji: "😤"
-type: "tech" # tech: 技術記事 / idea: アイデア
+title: "Windowsで作ったWPFアプリをCludflare R2とD1でバージョン管理する"
+emoji: "🦒"
+type: "tech"
 topics: ["wpf", "windows", "r2", "d1"]
 published: false
 publication_name: "gigooo_blog"
 ---
 ## はじめに
 
-WPFでつくったソフトをバージョンを管理する必要がありました。しかし、インストーラーを作成するレベルの規模ではないため、Github acrionsを使ってCludflare R2へアップロードするのはどうかという話になったため、実践した内容となります。
-最終的に、バイナリをR2へアップロードして、バージョンとリリース日をD1へinsertするワークフローになりました。
+WPFアプリをバージョンを管理しようと思いつき、Cludflare R2へアップロードしてD1へバージョンとリリース日をinsertするGitHub Actionsのワークフローを作ったよという記事です。
 
-win32apiを使用していたため、windowsでbuildする必要があり、そのためのワークフローを組み上げていく過程でいくつかハマりポイントがあったのでブログとしてまとめようと思います。
-
-余談ですが、そもそも情報が少ないことや、初めてGithub actionsを触ったこともあり結構大変でした。
+WPFアプリ内でwin32apiを使用しているためWindowsでbuildする必要があったのですが、その過程でいくつかポイントがあったので記事としてまとめようと思います。
 
 
 最終状態のコードは下記レポジトリで公開しています。
 TODO: レポジトリのURL貼る
 
 ## ワークフロー
+最終的なワークフローはこちらです。
 ```yml
 name: Build and Upload on Tag
 
@@ -78,7 +76,31 @@ jobs:
         run: wrangler d1 execute DB --remote --command "INSERT INTO Release(Version, Release_date) VALUES('${{ steps.get_tag_name.outputs.TAG_NAME }}', '${{ steps.get_datetime.outputs.DATETIME }}')"
 ```
 
+## ポイント
 
+### WPFを単一exeとしてビルドする
+
+https://wagomu.me/blog/2024-04-07-wpf-single-binary/
+
+
+### R2のAPIは管理者読み取りと書き込みで作成する
+
+## 残念ポイント
+
+### Cloudflare公式のactionを使わなかった
+
+https://github.com/cloudflare/wrangler-action
+
+## おまけ
+以下、おまけです。
+
+R2とD1を使って管理しているデータをフロント側でどのように表示・ダウンロードさせているかについて書いていきます。
+
+フロントエンドとAPIはhonoを使っています。
+また、ormとしてdrizzleを採用しました。
+
+
+<!--
 1. WPFをbuildして実行ファイルを作成
 
 - WPFのexeをR2へアップロード
@@ -115,3 +137,4 @@ jobs:
    - Windows環境でのGitHub Actionsの使い方と注意点
 
 このブログでは、WPFアプリのexe直接バージョン管理の実践例を紹介し、GitHub ActionsとCloudflare R2、D1を組み合わせたリリース管理の方法を解説します。また、Windows環境でのGitHub Actionsの使い方と注意点についても触れ、同様の課題に直面している開発者に有益な情報を提供します。
+ -->

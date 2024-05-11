@@ -78,18 +78,38 @@ jobs:
 
 ## ポイント
 
-### WPFを単一exeとしてビルドする
+### pwshを使ってtag名を取得する
+
+```yml
+      - name: Get tag name
+        id: get_tag_name
+        run: echo "TAG_NAME=$($Env:GITHUB_REF -replace 'refs/tags/','')" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
+```
+
+尚、outputとして使わないのであればこれだけで十分です。
+```yml
+      - name: Get tag name
+        shell: pwsh
+        run: |
+          $tagName = $env:GITHUB_REF -replace 'refs/tags/',''
+```
+
+
+### WPFのビルド
 
 https://wagomu.me/blog/2024-04-07-wpf-single-binary/
 
 
-### R2のAPIは管理者読み取りと書き込みで作成する
+### R2のAPIの作成
+R2のAPIを作成する際に一点注意すべき点があります
 
-## 残念ポイント
+この問題については、コミュニティーでも取りあげられていますが、未だ対応されていないようです。
+https://community.cloudflare.com/t/wrangler-r2-usage-fails-when-using-non-admin-tokens/600481
 
-### Cloudflare公式のactionを使わなかった
-
+### 何故Cloudflare公式のactionを使わなかった
+GitHub Actionsからwranglerを使うためには、公式の出しているActionsも存在します。
 https://github.com/cloudflare/wrangler-action
+これを使わなかった理由としては、手っ取り早く動かしたいという理由がありました。
 
 ## おまけ
 以下、おまけです。
@@ -99,42 +119,6 @@ R2とD1を使って管理しているデータをフロント側でどのよう�
 フロントエンドとAPIはhonoを使っています。
 また、ormとしてdrizzleを採用しました。
 
-
-<!--
-1. WPFをbuildして実行ファイルを作成
-
-- WPFのexeをR2へアップロード
-- tagとinsert日時をd1へinsert
-- honoを使って画面へ表示とダウンロード
-
-ブログの構成と概要は以下のようになります。
-
-タイトル：Cloudflare R2とD1を活用したWPFアプリのリリース管理
-
-1. はじめに
-   - WPFアプリのexeをバージョン管理する動機について説明
-   - インストーラー作成の手間を避けるためにexe直接のバージョン管理を選択
-
-2. 実装の流れ
-   - GitHubでのtagをトリガーにした一連の処理の概要
-     1. win32apiを使用しているWPFソフトウェアのビルド
-     2. ビルドしたexeのCloudflare R2へのアップロード
-     3. tag名のCloudflare D1へのinsert
-     4. honoを使ったリリースページの作成
-
-3. GitHub ActionsでWindowsを使う際の注意点
-   - Windowsを使った事例が少ないため、このブログを投稿する動機について
-   - PowerShellを使う際のtag名の取得方法
-     - `$Env:GITHUB_REF`をreplaceする必要性について
-
-4. Cloudflare Wranglerコマンド実行時のエラー対処法
-   - `cloudflare/wrangler-action`の代わりに`pnpm install -g wrangler`を使う
-   - R2のAPIの権限を「管理者読み取りと書き込み」に設定する必要性
-
-5. まとめ
-   - WPFアプリのexe直接バージョン管理の利点
-   - GitHub ActionsとCloudflareの組み合わせによるスムーズなリリース管理
-   - Windows環境でのGitHub Actionsの使い方と注意点
+## さいごに
 
 このブログでは、WPFアプリのexe直接バージョン管理の実践例を紹介し、GitHub ActionsとCloudflare R2、D1を組み合わせたリリース管理の方法を解説します。また、Windows環境でのGitHub Actionsの使い方と注意点についても触れ、同様の課題に直面している開発者に有益な情報を提供します。
- -->

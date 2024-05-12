@@ -5,6 +5,7 @@ type: "tech"
 topics: ["wpf", "windows", "r2", "d1"]
 published: false
 publication_name: "gigooo_blog"
+published_at: 2024-05-20 09:00
 ---
 ## はじめに
 

@@ -17,7 +17,7 @@ WPFアプリ内でwin32apiを使用しているためWindowsでbuildする必要
 TODO: レポジトリのURL貼る
 
 ## ワークフロー
-最終的なワークフローはこちらです。
+ワークフローはこちらです。
 ```yml
 name: Build and Upload on Tag
 
@@ -107,7 +107,7 @@ WPFアプリをビルドする際にも一工夫が必要です。
 ### R2のAPIの作成
 R2のAPIを作成する際に一点注意すべき点があります。それは、権限を「管理者読み取りと書き込み」にするということです。
 ![](/images/gigoo_wpf_to_cf/img1.png)
-本来であれば、「オブジェクト読み取りと書き込み」にして、対象のバケットを指定したいところですが、それでは失敗してしまうため、権限は **「管理者読み取りと書き込み」** にしましょう。
+本来であれば、「オブジェクト読み取りと書き込み」にして、対象のバケットを指定したいところですが、それでは`wrangler r2 object put`コマンドが失敗してしまうため、権限は **「管理者読み取りと書き込み」** にしましょう。
 
 この問題については、コミュニティーでも取りあげられていますが、未だ対応されていないようです。
 https://community.cloudflare.com/t/wrangler-r2-usage-fails-when-using-non-admin-tokens/600481
@@ -125,7 +125,7 @@ https://github.com/cloudflare/wrangler-action
 レポジトリはこちらになります。
 TODO: レポジトリのURL貼る
 
-Releaseテーブルはこのようなスキーマとなっています。
+Releaseテーブルのスキーマを用意して、migrationコマンドを実行します。
 ```ts
 // src/schema/release/ts
 
@@ -138,6 +138,7 @@ export const release = sqliteTable("Release", {
 
 ```
 
+バージョンの一覧とダウンロード処理はこのようにしています。
 ```tsx
 // src/index.tsx
 import { renderer } from "./renderer";
@@ -222,6 +223,7 @@ app.get("/api/versions/:version", async (c) => {
 
 export default app;
 ```
+D1へレコードが存在する且つ、R2へオブジェクトが存在するときのみダウンロードが可能になるつくりとなっています。
 
 
 ## おわりに

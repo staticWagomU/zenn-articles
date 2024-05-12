@@ -3,7 +3,7 @@ title: "Windowsで作ったWPFアプリをCludflare R2とD1でバージョン管
 emoji: "🦒"
 type: "tech"
 topics: ["wpf", "windows", "r2", "d1"]
-published: false
+published: true
 publication_name: "gigooo_blog"
 published_at: 2024-05-20 09:00
 ---

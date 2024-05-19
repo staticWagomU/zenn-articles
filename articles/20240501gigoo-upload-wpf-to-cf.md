@@ -9,13 +9,16 @@ published_at: 2024-05-20 09:00
 ---
 ## はじめに
 
-WPFアプリをバージョンを管理しようと思いつき、Cludflare R2へアップロードしてD1へバージョンとリリース日をinsertするGitHub Actionsのワークフローを作ったよという記事です。
+WPFアプリをバージョンを管理しようと思いつき、Cludflare R2へアップロードしてD1へバージョンとリリース日をインサートするGitHub Actionsのワークフローを作ったよという記事です。
 
 WPFアプリ内でwin32apiを使用しているためWindowsでbuildする必要があったのですが、その過程でいくつかポイントがあったので記事としてまとめようと思います。
 
+runs-onにwindows-latestを指定するとshellがpwshになるということを知らず、ハマってしまいました。
+
 
 最終状態のコードは下記レポジトリで公開しています。
-TODO: レポジトリのURL貼る
+
+https://github.com/staticWagomU/WpfAndCloudflare
 
 ## ワークフロー
 ワークフローはこちらです。
@@ -48,7 +51,7 @@ jobs:
           dotnet-version: '8.0.x'
           
       - name: Build and publish
-        run: dotnet publish .\SampleProject\SampleProject.csproj -c Release -o .\dist
+        run: dotnet publish .\WpfAndCloudflare\WpfAndCloudflare.csproj -c Release -o .\dist
         
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -68,7 +71,7 @@ jobs:
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.R2_API_TOKEN }}
-        run: wrangler r2 object put "sample-project/${{ steps.get_tag_name.outputs.TAG_NAME }}/SampleProject.exe" --file=dist/SampleProject.exe
+        run: wrangler r2 object put "WpfAndCloudflare/${{ steps.get_tag_name.outputs.TAG_NAME }}/WpfAndCloudflare.exe" --file=dist/WpfAndCloudflare.exe
 
       - name: Insert to Cloudflare D1
         env:
@@ -79,11 +82,12 @@ jobs:
 
 ## ポイント
 
-### pwshを使ってtag名を取得する
+### pwshでtag名を取得する
 
-windows-latestで動かす際にはdefault-shellがpwshになっています。
-そのため、tag名はこのように取得します。
-先頭に、`refs/tags/`という文字列が入るため、置換を挟んで、変数に格納します。
+windows-latestで動かすとshellがpwshになっています。
+そのため、tag名はbash的な書きかたではなく、このように取得します。
+`GitHub Actions tag名 取得`などで検索をするとbashで書かれてあるものしか出てこず、変にハマってしまいました。
+先頭に、`refs/tags/`という文字列が入るため、置換を挟んであげましょう。
 ```yml
       - name: Get tag name
         shell: pwsh
@@ -99,10 +103,24 @@ windows-latestで動かす際にはdefault-shellがpwshになっています。
 
 ### WPFのビルド
 WPFアプリをビルドする際にも一工夫が必要です。
-なにも気にせず、`dotnet publish`コマンドを実行するとexeのほかに大量のdllが作成されてしまいます。これではR2へアップロードする際にzipへ圧縮する等の手間がかかってしまします。
-単一exeとするために、`*.csproj`へ下記を追加しています。
-```a.txt
-
+なにも気にせず、`dotnet publish`コマンドを実行するとexeのほかに大量のdllが作成されてしまいます。これではR2へアップロードする際にzipへ圧縮する等の手間がかかります。
+単一exeにするために、`*.csproj`へ下記を追加しましょう。
+```diff xml
+ <Project Sdk="Microsoft.NET.Sdk">
+     <PropertyGroup>
+         <OutputType>WinExe</OutputType>
+         <TargetFramework>net8.0-windows</TargetFramework>
+         <Nullable>enable</Nullable>
+         <ImplicitUsings>enable</ImplicitUsings>
+         <UseWPF>true</UseWPF>
++        <PublishSingleFile>true</PublishSingleFile>
++        <SelfContained>true</SelfContained>
++        <DebugSymbols>False</DebugSymbols>
++        <DebugType>None</DebugType>
+         <AssemblyVersion>1.0.0.0</AssemblyVersion>
+         <FileVersion>1.0.0.0</FileVersion>
+     </PropertyGroup>
+ </Project>
 ```
 
 ### R2のAPIの作成
@@ -114,6 +132,7 @@ R2のAPIを作成する際に一点注意すべき点があります。それは
 https://community.cloudflare.com/t/wrangler-r2-usage-fails-when-using-non-admin-tokens/600481
 
 ### 何故Cloudflare公式のactionを使わなかった
+
 GitHub Actionsからwranglerを使うためには、公式の出しているActionsも存在します。
 https://github.com/cloudflare/wrangler-action
 これを使わなかった理由としては、pwshを使ってコマンドに変数を組み込んでいる実例が見つからなかったことと、手っ取り早く動かしたかったという理由によってです。
@@ -124,9 +143,16 @@ https://github.com/cloudflare/wrangler-action
 せっかくなのでR2とD1へ登録した内容を表示・ダウンロードできるところまでも書いておこうとおもいます。
 今回はhonoとdrrizle ormを使用しました。
 レポジトリはこちらになります。
-TODO: レポジトリのURL貼る
 
-Releaseテーブルのスキーマを用意して、migrationコマンドを実行します。
+セットアップにはこちらの記事を参考にしました。
+
+https://zenn.dev/collabostyle/articles/31d2276f247e60
+
+最終的なコードはこちらで公開しています。
+
+https://github.com/staticWagomU/WpfAndCloudflare
+
+Releaseテーブルのスキーマはこのようにしています。
 ```ts
 // src/schema/release/ts
 
@@ -166,7 +192,7 @@ app.use(renderer);
 
 const Versions: FC<{ versions: Version[] }> = ({ versions }) => (
   <div>
-    <h1>MapGrabber Release Page</h1>
+    <h1>WpfAndCloudflare Release Page</h1>
     <table style="border-collapse:collapse;" border={1}>
       <tr style="">
         <th>Version</th>
@@ -206,14 +232,14 @@ app.get("/api/versions/:version", async (c) => {
     }
 
     const bucket = c.env.MY_BUCKET;
-    const buecketObject = await bucket.get(`${version}/MapGrabberWPF.exe`);
+    const buecketObject = await bucket.get(`${version}/WpfAndCloudflare.exe`);
     if (buecketObject === null) {
       return c.notFound();
     }
 
     c.header("Content-Type", "application/octet-stream");
     c.header("etag", `"${buecketObject.etag}"`);
-    c.header("Content-Disposition", "attachment; filename=SampleProject.exe");
+    c.header("Content-Disposition", "attachment; filename=WpfAndCloudflare.exe");
     c.status(200);
 
     return c.body(buecketObject.body);

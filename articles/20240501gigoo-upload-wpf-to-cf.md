@@ -71,7 +71,7 @@ jobs:
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.R2_API_TOKEN }}
-        run: wrangler r2 object put "WpfAndCloudflare/${{ steps.get_tag_name.outputs.TAG_NAME }}/WpfAndCloudflare.exe" --file=dist/WpfAndCloudflare.exe
+        run: wrangler r2 object put "wpf-and-cloudflare/${{ steps.get_tag_name.outputs.TAG_NAME }}/WpfAndCloudflare.exe" --file=dist/WpfAndCloudflare.exe
 
       - name: Insert to Cloudflare D1
         env:

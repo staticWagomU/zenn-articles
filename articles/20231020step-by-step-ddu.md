@@ -1,6 +1,6 @@
 ---
 title: "一歩ずつ始めるddu.vim"
-emoji: "✋"
+emoji: "🦒"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["neovim", "lua"]
 published: true

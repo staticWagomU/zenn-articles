@@ -1,6 +1,6 @@
 ---
 title: "AHAスタックでTODOアプリを作った"
-emoji: "😤"
+emoji: "🦒"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["astro", "htmx", "alpinejs", "tailwindcss"]
 published: true

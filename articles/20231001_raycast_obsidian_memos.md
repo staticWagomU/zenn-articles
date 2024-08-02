@@ -1,6 +1,6 @@
 ---
 title: "RaycastでObsidianのデイリーノートのハードルを更に下げる"
-emoji: "🍡"
+emoji: "🦒"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["obsidian", "raycast"]
 published: true

@@ -1,6 +1,6 @@
 ---
 title: "vimとdenoでZennの執筆環境を作る"
-emoji: "👏"
+emoji: "🦒"
 type: "tech"
 topics: ["vim", "deno", "textlint"]
 published: true

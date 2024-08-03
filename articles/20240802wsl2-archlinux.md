@@ -30,9 +30,9 @@ sudo apt install zstd
 sudo tar --zstd -xvf archlinux-bootstrap-2024.08.01-x86_64.tar.zst
 ```
 
-pacmanのmirrorlistを編集して、利用したいミラーサーバーをコメントアウトします。
+次にpacmanのmirrorlistを編集して、利用したいミラーサーバーのコメントアウトを外します。
 
-私はArch導入後にreflectorコマンドでmirrorlistを更新するから適当でいいや、という安易な考えで、AustraliaとJapanを全部コメントアウトしました。
+私はArch導入後にreflectorコマンドでmirrorlistを更新するから適当でいいや、という安易な考えで、AustraliaとJapanのコメントアウトを全部外しました。
 ```shell
 cd root.x86_64/
 sudo vim etc/pacman.d/mirrorlist

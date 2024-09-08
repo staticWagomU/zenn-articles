@@ -79,7 +79,7 @@ nixos-fenerate-config --root /mnt
   # Enable the X11 windowing system.
   services.xserver = {
     xkb = {
-      layout = "jp";
+      layout = "jp"; # 日本語配列にする
       variant = "";
       options = "terminate:ctrl_alt_bksp";
     };
@@ -121,11 +121,9 @@ nixos-fenerate-config --root /mnt
 }
 ```
 
-どうしても`nano`を使いたくない人は、先に`nixos-install`と`reboot`まで実行してください。そのあとでvim等をいれて修正後、`nixos-rebuild switch`して`reboot`してください。
 
-
-設定ファイルの修正し`nixos-install`を実行してください。
-最後にパスワードの実行を求められるので、rootのパスワードを設定して`reboot`で再起動してください。ここでは日本語配列が適用されていないので、パスワードに記号を含める際には気を付けて入力してください。
+設定ファイルを修正し`nixos-install`を実行してください。ミスっているとエラーがでます。基本的にtypoだと思うので、頑張って修正してください。
+最後にパスワードの実行を求められるので、rootのパスワードを設定して`reboot`で再起動してください。reboot前は日本語配列が適用されていないので、パスワードに記号を含める際には気を付けて入力してください。
 
 再起動で画面が暗くなったタイミングでUSBメモリを抜いておきましょう。
 

@@ -1,0 +1,15 @@
+{
+  "version": "3",
+  "packages": {
+    "specifiers": {
+      "npm:zenn-cli@latest": "npm:zenn-cli@0.1.154"
+    },
+    "npm": {
+      "zenn-cli@0.1.154": {
+        "integrity": "sha512-s9SZst7TWiA2VS+40CWUS7pu5cl2OAIhNPyiAtqIwjDFzqB47vVsN78G8VK7VZ7ov6B4gqQrQHcgMHVqvoLN8g==",
+        "dependencies": {}
+      }
+    }
+  },
+  "remote": {}
+}

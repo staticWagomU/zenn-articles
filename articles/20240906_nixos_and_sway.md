@@ -48,7 +48,7 @@ nixos-generate-config --root /mnt
 
 ![](/images/20240906_nixos_and_sway/2024-09-06_11-32-13.png)
 
-ここから`/mnt/etc/nixos/configuration.nix`ファイルを修正していきます。ここが一番の鬼門なのですが、`vim`が入っておらず`nano`で編集する必要があります。マウスが使えないため矢印キーとスペースの連打で頑張って凌いでください。
+ここから`/mnt/etc/nixos/configuration.nix`ファイルを修正していきます。
 
 ```nix
 # Edit this configuration file to define what should be installed on

@@ -43,7 +43,7 @@ mkdir -p /mnt/boot
 mount -o umask=077 /dev/nvme0n1p1 /mnt/boot
 swapon /dev/nvme0n1p3
 
-nixos-fenerate-config --root /mnt
+nixos-generate-config --root /mnt
 ```
 
 ![](/images/20240906_nixos_and_sway/2024-09-06_11-32-13.png)

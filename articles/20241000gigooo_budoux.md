@@ -6,54 +6,109 @@ topics: ["remark", "markdownit", "budoux"]
 published: false
 publication_name: "gigooo_blog"
 ---
-何を伝えたいか
-- remarkとmarkdown-itでbudouxを使えるようになった
-- remarkはastroで使える
-- markdown-itはslidevで使える
-- いい感じに日本語が改行されると嬉しい
-
 
 ## はじめに
 
-budouxというものを知っていますか？
-英語であればスペースが単語の区切りとして機能しますが、日本語では単語ごとにスペースを空ける文章の書きかた(分かち書き)をしません。
-その分かち書きを実現するためにGoogleが開発したライブラリがbudouxです。
-軽量なため扱いやすいのは嬉しいポイントですね。
+みなさんは「budoux」というツールを知っていますか？
+英語等では単語間にスペースが入るため、テキスト処理や改行位置の調整が比較的容易です。しかし、日本語では通常、文中で分かち書きを行わないため、自然な改行は意外と困難です。  
+このような問題を解決するために、Googleが開発したのが「budoux」というライブラリです。
+budouxは、日本語テキストに対して、適切な改行位置を自動的に判定し、そこにゼロ幅スペース（`&#8203;`）を挿入する軽量なライブラリです。これにより、ページレイアウトやデバイス幅に応じた自然な改行を実現することができます。特別なプラグインや追加要素を付与しなくとも、軽量な構成で自然な文字区切りを行える点は嬉しいポイントです。
+
+手動で`<wbr />`タグを埋め込むことで改行位置を制御することもできますが、あまりにも現実的ではありません。そこでbudouxを用いることで、自動的かつ適切な改行ポイントを挿入でき、みんなハッピーというわけです。
+
+私自身は、以下のようなユースケースでbudouxを活用したいと考え、`remark-budoux`と`markdown-it-budoux`というプラグインを作成しました。
+
+- Astroで構築している自分のブログ
+- Slidev（Vueを用いたスライド作成フレームワーク）
+
+## remarkプラグインについて
+
+簡潔に書くことができました。
+下記のコードがその実装です。
+
+https://github.com/staticWagomU/remark-budoux/blob/main/index.js
+
+やっていることは非常にシンプルで、テキストノードに対してbudouxの`translateHTMLString`関数を適用することで、budouxが挿入したゼロ幅スペース入りのHTML文字列を生成します。最後にノードタイプを`html`に変更することで、出力結果がHTMLとして正しく解釈されるようにしています。
+
+![](/images/20241000gigooo_budoux/img1.png)
 
 
-手動で`<wbr />`タグを埋め込むことで自然な改行を実現することができますが、ブログ等の長文でそれをするのはあまりにも無謀です。しかしbudouxを使うこと楽をすることができます。
+## markdown-itプラグインについて
 
-自分は下記のユースケースでbudouxを使いたいです。
+重要なのはこの部分だけです。
 
-- Astroで作っている自分のブログ
-- SlidevというVueでスライドを作成するためのフレームワーク
-
-
-そして、remark-budouxとmarkdown-it-budouxを作りました。
-
-:::message
-調べてみたところ小学生低学年の国語教科書では分かち書きされているようです。
-:::
+https://github.com/staticWagomU/markdown-it-budoux/blob/main/src/index.ts#L37-L70
 
 
-4. markdown-itプラグインの作成
-   - プラグインの基本構造
-   - budouxを組み込む方法
-   - 実装上の注意点
+`paragraph_open`は、markdown-itがMarkdownをHTMLに変換する過程で使用する内部トークンの一種であり、おおよそのケースでは`<p>`タグへと変換されます。その`<p>`タグに対して、下記のようなスタイルを適用しています。これは`remark-budoux`で出力されたものと同じスタイルです。
 
-5. remarkプラグインの作成
-   - プラグインの基本構造
-   - budouxを組み込む方法
-   - 実装上の注意点
+```ts
+const WORD_BREAK_STYLE = 'word-break:keep-all;overflow-wrap:anywhere;';
+```
 
-6. プラグインの使用方法
-   - インストール方法
-   - 設定方法
-   - 使用例
+次に、budouxのparse関数を用いてテキストを適切な位置で分割し、ゼロ幅スペースで結合することで改行位置を指定します。この処理により、remark-budouxと似た挙動を実現しています。
 
-8. まとめ
-   - プラグイン作成の振り返り
-   - 今後の展望や改善点
+理想としては`translateHTMLString`によるHTML文字列をそのまま解釈させたかったのですが、`markdown-it`の知識が足りず期待通りの動作をさせることができなかったため、このような力技による実装方法を取っています。
+
+
+
+## プラグインの使いかた
+
+
+### remark-budouxの使いかた
+
+Astroでの使いかたを例に出します。
+
+```shell
+$ npm install remark-budoux
+```
+
+ライブラリをプロジェクトに追加した後、`Astro.config.mjs`に組み込みます。
+
+```diff js:Astro.config.mjs
++import remarkBudoux from "remark-budoux";
+
+ export default defineConfig({
++  markdown: {
++    remarkPlugins: [remarkBudoux],
++  },
+ });
+```
+
+
+### markdown-it-budouxの使いかた
+
+次にSlidevでの使いかたを例に出します。
+
+```shell
+$ npm install markdown-it-budoux
+```
+
+ライブラリをプロジェクトに追加し、`vite.config.js`に設定を追記します。
+
+```diff js:vite.config.js
+ import { defineConfig } from 'vite'
+ import '@slidev/cli'
++import markdownItBudoux from 'markdown-it-budoux'
+
+ export default defineConfig({
+   slidev: {
+ +   markdown: {
+ +     markdownItSetup(md) {
+ +       md.use(markdownItBudoux)
+ +     },
+ +   },
+   },
+ })
+```
+
+
+
+## おわりに
+
+今回初めてnpmへpublishする経験をすることができました。うれしいね。
+
+残タスクとしてはGithub Actionsが整備しきれていないので、そこを進めていきたいです。
 
 ## 参考リンク
 

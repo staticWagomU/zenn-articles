@@ -1,5 +1,5 @@
 ---
-title: "remarkとmarkdown-itでbudouxを扱う"
+title: "remarkとmarkdown-itでbudouxを扱うプラグインを書いたよ"
 emoji: "🦒"
 type: "tech"
 topics: ["remark", "markdownit", "budoux"]

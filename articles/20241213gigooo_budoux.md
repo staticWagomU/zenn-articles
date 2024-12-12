@@ -24,6 +24,8 @@ budouxは、日本語テキストに対して、適切な改行位置を自動�
 
 ## remarkプラグインについて
 
+https://www.npmjs.com/package/remark-budoux
+
 簡潔に書くことができました。
 下記のコードがその実装です。
 
@@ -31,10 +33,13 @@ https://github.com/staticWagomU/remark-budoux/blob/main/index.js
 
 やっていることは非常にシンプルで、テキストノードに対してbudouxの`translateHTMLString`関数を適用することで、budouxが挿入したゼロ幅スペース入りのHTML文字列を生成します。最後にノードタイプを`html`に変更することで、出力結果がHTMLとして正しく解釈されるようにしています。
 
-![](/images/20241000gigooo_budoux/img1.png)
+![](/images/20241213gigooo_budoux/img1.png)
 
 
 ## markdown-itプラグインについて
+
+https://www.npmjs.com/package/markdown-it-budoux
+
 
 重要なのはこの部分だけです。
 

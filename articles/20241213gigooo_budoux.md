@@ -17,7 +17,7 @@ budouxは、日本語テキストに対して、適切な改行位置を自動�
 
 手動で`<wbr />`タグを埋め込むことで改行位置を制御することもできますが、あまりにも現実的ではありません。そこでbudouxを用いることで、自動的かつ適切な改行ポイントを挿入でき、みんなハッピーというわけです。
 
-私自身は、以下のようなユースケースでbudouxを活用したいと考え、`remark-budoux`と`markdown-it-budoux`というプラグインを作成しました。
+私自身は、以下のようなユースケースでbudouxを使いたいと考え、`remark-budoux`と`markdown-it-budoux`というプラグインを作成しました。
 
 - Astroで構築している自分のブログ
 - Slidev（Vueを用いたスライド作成フレームワーク）
@@ -52,7 +52,7 @@ https://github.com/staticWagomU/markdown-it-budoux/blob/main/src/index.ts#L37-L7
 const WORD_BREAK_STYLE = 'word-break:keep-all;overflow-wrap:anywhere;';
 ```
 
-次に、budouxのparse関数を用いてテキストを適切な位置で分割し、ゼロ幅スペースで結合することで改行位置を指定します。この処理により、remark-budouxと似た挙動を実現しています。
+次に、budouxのparse関数を用いて分ち書きされた文字列の配列を取得します。次にゼロ幅スペースで結合することで、remark-budouxと似た挙動を実現しています。
 
 理想としては`translateHTMLString`によるHTML文字列をそのまま解釈させたかったのですが、`markdown-it`の知識が足りず期待通りの動作をさせることができなかったため、このような力技による実装方法を取っています。
 

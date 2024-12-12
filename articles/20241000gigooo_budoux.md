@@ -1,10 +1,11 @@
 ---
-title: "remarkとmarkdown-itでbudouxを扱うプラグインを書いたよ"
+title: "remarkとmarkdown-itでbudouxを扱うライブラリを書いたよ"
 emoji: "🦒"
 type: "tech"
 topics: ["remark", "markdownit", "budoux"]
-published: false
+published: true
 publication_name: "gigooo_blog"
+published_at: 2024-12-13 09:00
 ---
 
 ## はじめに

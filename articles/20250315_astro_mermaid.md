@@ -8,6 +8,8 @@ published: true
 
 ## はじめに
 
+https://astro.build/blog/astro-550/
+
 Astro5.5が2025/03/13にリリースされました。今回のリリースでexcludeLangsオプションがmarkdownの設定の中に生えました。
 このオプションによって、今までは少し面倒だったMermaidが扱いやすくなったということで試しました。
 ちょうど自分のAstroで作ったブログにMermaidを入れたいなと思っていたのでちょうどよかったです。

@@ -196,6 +196,8 @@ Playwright Host validation warning:
 
 再度ページを確認するとSVG画像として表示されます。
 
+buildした内容を確認するとSVGで出力されていることが確認できます。
+
 ```sh
 > bun run build
 $ astro build
@@ -221,7 +223,6 @@ $ astro build
 23:40:09 [build] Complete!
 ```
 
-buildした内容を確認するとSVGで出力されていることが確認できます。
 ```html
 <!DOCTYPE html><meta charset="utf-8"><h1 id="astro--mermaid">Astro + mermaid</h1>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>```mermaid</span></span>

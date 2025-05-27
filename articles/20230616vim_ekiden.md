@@ -51,6 +51,40 @@ end,
 ![](/images/20230616_vim_ekiden/media2.gif)
 思ったとおりに動作しました。
 
+※ 2025年5月27日追記
+```help
+open({dir}, {opts}, {cb})                                               *oil.open*
+    Open oil browser for a directory
+
+    Parameters:
+      {dir}  `nil|string` When nil, open the parent of the current buffer, or
+             the cwd if current buffer is not a file
+      {opts} `nil|oil.OpenOpts`
+          {preview} `nil|oil.OpenPreviewOpts` When present, open the preview
+                    window after opening oil
+              {vertical}   `nil|boolean` Open the buffer in a vertical split
+              {horizontal} `nil|boolean` Open the buffer in a horizontal split
+              {split}      `nil|"aboveleft"|"belowright"|"topleft"|"botright"` S
+                           plit modifier
+      {cb}   `nil|fun()` Called after the oil buffer is ready
+```
+
+現在のoil.nvimではopen関数の第3引数にcallback関数を渡すことができるため、下記のように書きかえることでdefer_fnを使わずとも同様の動作をさせることができるようになっています。
+
+```diff lua
+ vim.keymap.set("n", "<leader>e",
+ function ()
+-  vim.cmd"Oil ."
+-  vim.defer_fn(function()
+-    vim.cmd.FuzzyMotion()
+-  end, 150)
++  require("oil").open(".", nil, vim.cmd.FuzzyMotion)
+ end,
+ { noremap=true, silent=true })
+```
+
+※ 2025年5月27日追記 おわり
+
 ## おわりに
 
 `vim.schedule()`で直列実行がうまくいかない場合は`vim.defer_fn()`を使ってみてね。

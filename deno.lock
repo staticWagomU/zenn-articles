@@ -1,15 +1,12 @@
 {
-  "version": "3",
-  "packages": {
-    "specifiers": {
-      "npm:zenn-cli@latest": "npm:zenn-cli@0.1.154"
-    },
-    "npm": {
-      "zenn-cli@0.1.154": {
-        "integrity": "sha512-s9SZst7TWiA2VS+40CWUS7pu5cl2OAIhNPyiAtqIwjDFzqB47vVsN78G8VK7VZ7ov6B4gqQrQHcgMHVqvoLN8g==",
-        "dependencies": {}
-      }
-    }
+  "version": "5",
+  "specifiers": {
+    "npm:zenn-cli@latest": "0.2.3"
   },
-  "remote": {}
+  "npm": {
+    "zenn-cli@0.2.3": {
+      "integrity": "sha512-ghYpg2foOeFExvtWKDFSjCsq+utYf84jApw37Wli1MnSAE1la40GZ47kXQDQKeh/1LV2AT0LDMYWbmE64Z4ZSg==",
+      "bin": true
+    }
+  }
 }

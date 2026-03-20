@@ -1,5 +1,5 @@
 ---
-title: "AIエージェントのお供にNeovimはいかが？ ― コードビューアーとしてのNeovim入門"
+title: "AIエージェントのお供にNeovimはいかが？ ― コードビューアーとしてのNeovim
 emoji: "🦒"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["neovim", "vim"]
